@@ -1,0 +1,152 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO.Ports;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace TTOtoPark
+{
+    public partial class Form1 : Form
+    {
+        private string data;
+        public Form1()
+        {
+            InitializeComponent();
+
+            RenkDegistir('Y');
+
+        }
+
+        private void RenkDegistir(char renk)
+        {
+            if (renk =='Y')
+            {
+                button_p1.BackColor = Color.Green;
+                button_p1.ForeColor = Color.White;
+                button_p2.BackColor = Color.Green;
+                button_p2.ForeColor = Color.White;
+                button_p3.BackColor = Color.Green;
+                button_p3.ForeColor = Color.White;
+            }
+            else
+            {
+                button_p1.BackColor = Color.Red;
+                button_p1.ForeColor = Color.White;
+                button_p2.BackColor = Color.Red;
+                button_p2.ForeColor = Color.White;
+                button_p3.BackColor = Color.Red;
+                button_p3.ForeColor = Color.White;
+            }
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+            textBox1.ReadOnly = true;
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
+            {
+                comboBox1.Items.Add(port);
+            }
+            //serialPort1.DataReceived += new SerialDataReceivedEventHandler(serialPort1_DataReceived);
+            //if (textBox1.Text )
+            //{
+
+            //}
+        }
+
+        private void serialPort1_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            data = serialPort1.ReadLine();
+            this.Invoke(new EventHandler(displayData_event));
+        }
+
+        private void displayData_event(object sender, EventArgs e)
+        {
+            textBox1.Text = data;
+       
+        }
+
+        private void button_baslat_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                serialPort1.PortName = comboBox1.Text;
+                serialPort1.BaudRate = 9600;
+                serialPort1.Open();
+                button_bitir.Enabled = true;
+                button_baslat.Enabled = false;
+
+
+            }
+            catch (Exception hata)
+            {
+
+                MessageBox.Show("Hata: "+hata.Message.ToString());
+            }
+
+
+        }
+
+        private void button_bitir_Click(object sender, EventArgs e)
+        {
+            serialPort1.Close();
+            button_bitir.Enabled = false;
+            button_baslat.Enabled = true;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox1.Text.Substring(0, 2) == "P1")
+            {
+                if (int.Parse(textBox1.Text.Substring(5)) < 500)
+                {
+                    button_p1.BackColor = Color.Red;
+                    button_p1.ForeColor = Color.White;
+                }
+                else
+                {
+                    button_p1.BackColor = Color.Green;
+                    button_p1.ForeColor = Color.White;
+                }
+            }
+
+            if (textBox1.Text.Substring(0, 2) == "P2")
+            {
+                if (int.Parse(textBox1.Text.Substring(5)) < 500)
+                {
+                    button_p2.BackColor = Color.Red;
+                    button_p2.ForeColor = Color.White;
+                }
+                else
+                {
+                    button_p2.BackColor = Color.Green;
+                    button_p2.ForeColor = Color.White;
+                }
+            }
+
+            if (textBox1.Text.Substring(0, 2) == "P3")
+            {
+                if (int.Parse(textBox1.Text.Substring(5)) < 500)
+                {
+                    button_p3.BackColor = Color.Red;
+                    button_p3.ForeColor = Color.White;
+                }
+                else
+                {
+                    button_p3.BackColor = Color.Green;
+                    button_p3.ForeColor = Color.White;
+                }
+            }
+
+            label1.Text = textBox1.Text.Substring(0, 2);
+
+        }
+    }
+}
